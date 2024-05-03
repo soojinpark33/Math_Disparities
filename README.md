@@ -1,4 +1,5 @@
-# Math_Disparities
+# The Role of Opportunity to Learn and School Socioeconomic Composition in Reducing Racial and Gendered Disparities in Mathematics Achievement
+
 
 Tyler Womack<sup>1</sup>, Gregory Palardy<sup>1</sup>, and Soojin Park<sup>1</sup>
 
