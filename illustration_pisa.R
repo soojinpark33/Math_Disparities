@@ -20,24 +20,47 @@ data$lang <- relevel(as.factor(data$lang), ref = "313")
 #baseline covariate: age
 #intermediate confounder: student SES (escs)
 
-# intervention 1: school SES
+#::::::::::::::::::::::::::::Warning::::::::::::::::::::::::::::::::#
+#Note that results may not exactly match those in Table 3 due to the# 
+#randomness involved when imputing missing data and bootstrapping   #
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+
+#::::::::::::::::::::::::::::#
+# intervention 1: school SES #
+#::::::::::::::::::::::::::::#
 fit.m1 <- lm(xses ~ racesex + lang, data = data)
 fit.y1 <- lm(math ~ racesex + xses + racesex*xses + escs + lang, data = data)
 summary(fit.y1)
 coef(fit.y1)[9]
+
+#product of coefficient
+res1.poc1 <- pocr(fit.m = fit.m1, fit.y = fit.y1, sims = 1000, cluster=data$schoolID,
+             covariates = c("lang"), treat = "racesex")
+
+round(res.1a1$poc1,2)
+#single mediator imputation (need to run for sensitivity analysis)
 res.1a1 <- smi( fit.m = fit.m1,
                fit.y = fit.y1, sims = 1000, cluster=data$schoolID,
                covariates = c("lang"), treat = "racesex")
 
 round(res.1a1$result,2)
 
-# intervention 2: OTL
+#:::::::::::::::::::::#
+# intervention 2: OTL #
+#:::::::::::::::::::::#
 fit.m2 <- lm(otl ~ racesex + lang, data = data)
 fit.y2 <- lm(math ~ racesex + otl + racesex*otl + escs + lang + 
              xses + propblck  + city  + proplang +  tracking   +abgrp  +       
             schtype +   propcert   + grade+ 
              mathintfc  + matwketh   +  repeat1   +  outhours  +  subnorm, data = data)
 summary(fit.y2)
+
+#product of coefficient
+res1.poc2 <- pocr(fit.m = fit.m2, fit.y = fit.y2, sims = 1000, cluster=data$schoolID,
+                  covariates = c("lang"), treat = "racesex")
+
+round(res.1a1$poc2,2)
+#single mediator imputation (need to run for sensitivity analysis)
 res.1b1 <- smi( fit.m = fit.m2,
                  fit.y = fit.y2, sims = 1000, cluster=data$schoolID,
                  covariates = c("lang"), treat = "racesex")
@@ -45,7 +68,7 @@ res.1b1 <- smi( fit.m = fit.m2,
 round(res.1b1$result,2)
 
 # Sensitivity analysis for xses
-sensRes2 <- sensitivity(boot.res = res.1a1, fit.m = fit.m1, fit.y = fit.y1,mediator="xses", 
+sensRes2 <- sensitivity(boot.res =res1.poc, fit.m = fit.m1, fit.y = fit.y1,mediator="xses", 
                        covariates = c("lang"), treat = "racesex",sel.lev.treat = 2, max.rsq = 0.3)
 sensRes3 <- sensitivity(boot.res = res.1a1, fit.m = fit.m1, fit.y = fit.y1,mediator="xses", 
                        covariates = c("lang"), treat = "racesex",sel.lev.treat = 3, max.rsq = 0.3)
